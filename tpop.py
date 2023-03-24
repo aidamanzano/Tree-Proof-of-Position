@@ -166,9 +166,11 @@ def TPoP(tree, threshold:float, witness_number_per_depth:int) -> bool:
                     parent.verified = False
                 
         if counterDepth < threshold*len(tree.nodes[level+1]):
-            return False
+            parent.algorithm_honesty_output = False
+        else:
+            parent.algorithm_honesty_output = True
         
-    return True
+    return parent.algorithm_honesty_output
 
 
 
@@ -194,8 +196,8 @@ def results(cars):
     
     return True_Positive, True_Negative, False_Positive, False_Negative, Accuracy
 
-True_Positive, True_Negative, False_Positive, False_Negative, Accuracy = results(car_list)
-print(True_Positive, True_Negative, False_Positive, False_Negative)
+#True_Positive, True_Negative, False_Positive, False_Negative, Accuracy = results(car_list)
+#print(True_Positive, True_Negative, False_Positive, False_Negative)
 #print(False_Negative_cars)
 
 
