@@ -14,3 +14,5 @@ The `initialiser_functions.py` script is to generate the different types of agen
 I will link the detailed explanation of T-PoP here as soon as the work is up on Arxiv, but you can check the comments of the `tpop.py` file to follow how the algorithm works.
 
 The simulation generator notebooks will likely be updated, and details on the collaborative lying attack simulations will be up shortly too. 
+
+Use python version 3.9
