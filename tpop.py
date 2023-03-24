@@ -28,7 +28,37 @@ def checks_v2(child, named_cars, number_of_witnesses_needed, threshold):
 
         counter += 1
         named_cars.add(child.ID)
+
+
     return counter
+
+def checks_v3(child, named_cars, number_of_witnesses_needed, threshold):
+    """checks called from the child with respect to the parent node, to ensure that 
+    all criteria for T-PoP are met."""
+    counter = 0
+    parent = child.parent
+    parent_position = parent.claim_position()
+
+    
+    if (
+    #checking the parent is a neighbour of the child
+    child.is_car_a_neighbour(parent) is True and
+    #checking the parent is in the range of sight of the child
+    child.is_in_range_of_sight(parent_position) is True and
+    #checking the child has not been named before
+    child.ID not in named_cars and 
+    #checking the parent has named enough witnesses (ie children)
+    len(parent.children) >= int(number_of_witnesses_needed * threshold) and
+    #checking that there is no repeats in the named witnesses (ie children) 
+    len(parent.children) == len(set(parent.children))
+    ):
+        named_cars.add(child.ID)
+        return True
+    else:
+        return False
+        
+
+    
 
 
 
@@ -96,7 +126,14 @@ def reverse_bfs(tree, witness_number_per_depth, threshold):
             #update the parent counter
             parent_counter = parent_counter + counter
             parent.counter = parent_counter
+
             print(parent.counter)
+            
+        if parent.counter >= int(number_of_witnesses_needed * threshold):
+            parent.algorithm_honesty_output = True
+        else:
+            parent.algorithm_honesty_output = False
+            
     
     if child.counter is not None:
         print('root counter ', root.counter, int(number_of_witnesses_needed * threshold))
@@ -110,31 +147,28 @@ def reverse_bfs(tree, witness_number_per_depth, threshold):
     return root.algorithm_honesty_output
 
 
-London = e.Environment([0,0.25], [0,0.25], 0.25)
-p = 0
-q = 0
-car_list = []
-for n in range(1000):
-    car = i.car_gen(p, q, London)
-    car_list.append(car)
 
-#print(car_list)
+def TPoP(tree, threshold:float, witness_number_per_depth:int) -> bool:
+    named_cars = set()
+    for level in range(tree.depth - 1, -1, -1):
+        number_of_witnesses_needed = witness_number_per_depth[level]
+        counterDepth = 0
+        for parent in tree.nodes[level]:
+                counterChildren = 0
+                for child in parent.children:
+                    
+                    if child.verified and checks_v3(child, named_cars, number_of_witnesses_needed, threshold):
 
-e.environment_update(car_list, 0.01, London)
+                        counterChildren += 1
+                        counterDepth += 1
 
-depth = 2
-witness_number_per_depth = [2, 2, 2] 
-
-tree = Tree2(car_list[0], depth, witness_number_per_depth)
-for d in range(depth + 1):
-    print(tree.nodes[d])
-
-
-for car in car_list:
-    tree = Tree2(car, depth, witness_number_per_depth)
-    output = reverse_bfs(tree, witness_number_per_depth, 1)
-    
-
+                if counterChildren < threshold*len(parent.children):
+                    parent.verified = False
+                
+        if counterDepth < threshold*len(tree.nodes[level+1]):
+            return False
+        
+    return True
 
 
 

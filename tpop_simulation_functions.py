@@ -46,7 +46,7 @@ def tpop_simulator(number_of_simulations:int, number_of_cars:int, probability_of
         for car in car_list:
             
             tree = t.Tree2(car, depth, witness_number_per_depth)
-            output = t.reverse_bfs(tree, witness_number_per_depth, threshold)
+            output = t.TPoP(tree, threshold, witness_number_per_depth)
         
         True_Positive, True_Negative, False_Positive, False_Negative, Accuracy = t.results(car_list)
         row = parser(simulation, probability_of_honest, probability_of_coerced, density, threshold, Accuracy, True_Positive, True_Negative, False_Positive, False_Negative)
